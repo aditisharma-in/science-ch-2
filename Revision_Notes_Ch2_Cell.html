@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ch 2: Cell — The Building Block of Life | Revision Notes</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            line-height: 1.7;
+            color: #1e293b;
+            background: #f8fafc;
+            display: flex;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0; left: 0;
+            width: 280px;
+            height: 100vh;
+            background: #0f172a;
+            color: #e2e8f0;
+            overflow-y: auto;
+            z-index: 1000;
+            padding: 0;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-header {
+            padding: 24px 20px 16px;
+            border-bottom: 1px solid #1e293b;
+        }
+        .sidebar-header h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            line-height: 1.4;
+        }
+        .sidebar-header span {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            display: block;
+            margin-top: 4px;
+        }
+        .sidebar nav { padding: 12px 0; }
+        .sidebar nav a {
+            display: block;
+            padding: 10px 20px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.15s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border-left-color: #38bdf8;
+        }
+        .sidebar nav a.sub {
+            padding-left: 36px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 12px; left: 12px;
+            z-index: 1100;
+            background: #0f172a;
+            color: #fff;
+            border: none;
+            width: 42px; height: 42px;
+            border-radius: 10px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 999;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            margin-left: 280px;
+            flex: 1;
+            min-height: 100vh;
+            padding: 0;
+        }
+        .content {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 48px 48px 80px;
+        }
+
+        /* ===== TOP HEADER ===== */
+        .page-title {
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .page-title h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+        }
+        .page-title .meta {
+            margin-top: 8px;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        /* ===== SECTION STYLES ===== */
+        section { margin-bottom: 48px; }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .section-header .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            background: #0f172a;
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .section-header h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 24px 0 12px;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 480px;
+        }
+        thead { background: #f1f5f9; }
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 600;
+            color: #334155;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        td {
+            padding: 11px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8fafc; }
+
+        /* ===== INLINE ELEMENTS ===== */
+        strong { color: #0f172a; font-weight: 700; }
+        em { color: #475569; }
+        p { margin: 12px 0; color: #334155; }
+        ul, ol { margin: 12px 0; padding-left: 24px; }
+        li { margin: 6px 0; color: #334155; }
+
+        /* ===== BLOCKQUOTES ===== */
+        blockquote {
+            margin: 20px 0;
+            padding: 16px 20px;
+            background: #f1f5f9;
+            border-left: 4px solid #0f172a;
+            border-radius: 0 10px 10px 0;
+            color: #334155;
+            font-size: 0.9rem;
+        }
+        blockquote strong { color: #0f172a; }
+
+        /* ===== SCIENTIST / CURIOSITY SPECIAL ===== */
+        .scientist-box {
+            margin: 20px 0;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #fef9e7 0%, #fef3cd 100%);
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 12px 12px 0;
+        }
+        .scientist-box .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #92400e;
+            font-weight: 700;
+        }
+        .scientist-box .label::before { content: "🔬 "; }
+        .scientist-box p { margin: 6px 0; color: #78350f; }
+
+        .curiosity-box {
+            margin: 20px 0;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 100%);
+            border-left: 4px solid #8b5cf6;
+            border-radius: 0 12px 12px 0;
+        }
+        .curiosity-box .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #5b21b6;
+            font-weight: 700;
+        }
+        .curiosity-box .label::before { content: "💡 "; }
+        .curiosity-box p { margin: 6px 0; color: #1e1b4b; }
+
+        /* ===== COMPETENCY Q&A ===== */
+        .qa-block {
+            margin: 20px 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .qa-block .q {
+            padding: 14px 18px;
+            background: #f8fafc;
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .qa-block .q::before { content: "Q: "; color: #3b82f6; }
+        details {
+            padding: 0 18px;
+        }
+        details summary {
+            padding: 12px 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: #3b82f6;
+            font-size: 0.875rem;
+            user-select: none;
+        }
+        details summary:hover { color: #1d4ed8; }
+        details .answer {
+            padding: 4px 0 16px;
+            color: #334155;
+            font-size: 0.9rem;
+            border-top: 1px dashed #e2e8f0;
+            margin-top: 4px;
+            padding-top: 12px;
+        }
+        details .answer p { margin: 4px 0; }
+
+        /* ===== HR ===== */
+        hr {
+            margin: 40px 0;
+            border: none;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer-note {
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 2px solid #e2e8f0;
+            font-size: 0.85rem;
+            color: #64748b;
+            text-align: center;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .sidebar-toggle { display: flex; }
+            .main { margin-left: 0; }
+            .content { padding: 48px 20px 60px; }
+            .content { padding-top: 68px; }
+            .page-title h1 { font-size: 1.5rem; }
+        }
+        @media (max-width: 600px) {
+            .content { padding: 60px 16px 40px; }
+            .section-header h2 { font-size: 1.1rem; }
+            .section-header .num { width: 30px; height: 30px; font-size: 0.75rem; }
+            table { font-size: 0.8rem; min-width: 300px; }
+            th, td { padding: 8px 10px; }
+            blockquote { padding: 12px 16px; }
+            .scientist-box, .curiosity-box { padding: 14px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR TOGGLE (mobile) ===== -->
+<button class="sidebar-toggle" id="menuBtn" aria-label="Toggle sidebar">☰</button>
+<div class="sidebar-overlay" id="overlay"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h2>Cell — The Building Block of Life</h2>
+        <span>NCERT Class 9 · Ch 2</span>
+    </div>
+    <nav>
+        <a href="#sec1">1. How to Study Cells?</a>
+        <a href="#sec2">2. Cell Membrane</a>
+        <a href="#sec3">3. Cell Wall</a>
+        <a href="#sec4">4. Cell Interior — Organelles</a>
+        <a href="#sec4-1" class="sub">4.1 Nucleus</a>
+        <a href="#sec4-2" class="sub">4.2 Ribosomes</a>
+        <a href="#sec4-3" class="sub">4.3 Endoplasmic Reticulum</a>
+        <a href="#sec4-4" class="sub">4.4 Golgi Apparatus</a>
+        <a href="#sec4-5" class="sub">4.5 Lysosomes</a>
+        <a href="#sec4-6" class="sub">4.6 Mitochondria</a>
+        <a href="#sec4-7" class="sub">4.7 Plastids</a>
+        <a href="#sec4-8" class="sub">4.8 Vacuoles</a>
+        <a href="#sec5">5. Prokaryotic vs Eukaryotic</a>
+        <a href="#sec6">6. Cell Division</a>
+        <a href="#sec7">7. Cell Theory</a>
+        <a href="#sec8">8. Cell Growth &amp; Control</a>
+        <a href="#sec-quick">Quick Comparison Table</a>
+        <a href="#sec-craig">J. Craig Venter Experiment</a>
+        <a href="#sec-preserve">Cell Sap &amp; Preservation</a>
+    </nav>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+<div class="content">
+
+    <!-- PAGE TITLE -->
+    <div class="page-title">
+        <h1>Chapter 2: Cell — The Building Block of Life</h1>
+        <div class="meta">Revision Notes · NCERT Class 9 Science · Verified from iesc102.pdf</div>
+    </div>
+
+    <!-- ===== SECTION 1 ===== -->
+    <section id="sec1">
+        <div class="section-header">
+            <span class="num">1</span>
+            <h2>How to Study Cells?</h2>
+        </div>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Concept</th><th>Key Point</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Resolution</strong></td><td>Ability of human eye to see two close objects as separate — <strong>0.1 mm</strong> at 25 cm distance</td></tr>
+                <tr><td><strong>Microscope</strong></td><td>Uses convex lens / combination of lenses (objective + eyepiece) to magnify objects</td></tr>
+                <tr><td><strong>Light Microscope</strong></td><td>Uses visible light; common in school labs; objective lenses 10X, 40X</td></tr>
+                <tr><td><strong>Electron Microscope</strong></td><td>Uses beam of electrons instead of light; reveals nanometre-scale details</td></tr>
+                <tr><td><strong>Cell size estimate</strong></td><td>Formula: Diameter of field (μm) ÷ No. of cells along diameter</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p><strong>Magnification = Eyepiece power × Objective lens power</strong><br>
+        > e.g., 10X × 10X = <strong>100X total magnification</strong></p>
+
+        <p><strong>Unit conversion:</strong> 1 mm = 1000 μm | 1 nm = 0.000001 mm</p>
+
+        <blockquote><strong>Robert Hooke</strong> — First observed cell in 1665 using self-designed microscope (~200–300X). Observed box-like compartments in cork and named them "cells".</blockquote>
+
+        <div class="qa-block">
+            <div class="q">A student sees 20 onion cells across a microscope field of diameter 4000 μm. What is the size of one onion cell? If eyepiece is 10X and objective is 40X, how large will the cell appear?</div>
+            <details>
+                <summary>Show Answer</summary>
+                <div class="answer">Size = 4000/20 = 200 μm. Total magnification = 10 × 40 = 400X. Apparent size = 200 × 400 = 80,000 μm = 80 mm.</div>
+            </details>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 2 ===== -->
+    <section id="sec2">
+        <div class="section-header">
+            <span class="num">2</span>
+            <h2>Cell Membrane — Universal Feature of All Cells</h2>
+        </div>
+
+        <ul>
+            <li><strong>Thin boundary</strong> surrounding the cell — protects contents</li>
+            <li>Also called <strong>plasma membrane</strong></li>
+            <li><strong>Selectively permeable</strong> — allows some substances, blocks others</li>
+        </ul>
+
+        <h3>Osmosis</h3>
+        <blockquote>Movement of water through a selectively permeable membrane from <strong>dilute → concentrated</strong> solution</blockquote>
+
+        <p><strong>Potato experiment (Activity 2.2):</strong></p>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Beaker</th><th>Solution</th><th>Potato piece</th></tr></thead>
+            <tbody>
+                <tr><td>A</td><td>Plain water</td><td>Swells (water enters)</td></tr>
+                <tr><td>B</td><td>20% salt/sugar</td><td>Shrinks (water leaves)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Effect of Solutions on Cells</h3>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Solution</th><th>Extracellular vs Intracellular</th><th>Effect</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Hypotonic</strong></td><td>Outside &lt; Inside concentration</td><td>Cell swells (water enters)</td></tr>
+                <tr><td><strong>Hypertonic</strong></td><td>Outside &gt; Inside concentration</td><td>Cell shrinks (water leaves)</td></tr>
+                <tr><td><strong>Isotonic</strong></td><td>Outside = Inside concentration</td><td>No change</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Structure of Cell Membrane (Fluid-Mosaic Model)</h3>
+        <ul>
+            <li><strong>Lipid bilayer</strong> — 2 layers of fat molecules (heads outward, tails inward)</li>
+            <li><strong>Proteins</strong> embedded — act as gatekeepers</li>
+            <li><strong>Fluid</strong> — molecules move sideways, flip, rotate</li>
+            <li><strong>Mosaic</strong> — molecules arranged like tiles</li>
+            <li>Thickness: <strong>7–10 nm</strong></li>
+        </ul>
+
+        <div class="qa-block">
+            <div class="q">A student places a Rhoeo leaf peel in 20% sugar solution. After 30 min, the inner contents shrink but cell shape remains same. Explain why.</div>
+            <details>
+                <summary>Show Answer</summary>
+                <div class="answer">Water moves out due to osmosis (hypertonic solution). The rigid <strong>cell wall</strong> maintains the outer shape while the cell membrane pulls away from it. Animal cells (no cell wall) would shrink entirely.</div>
+            </details>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 3 ===== -->
+    <section id="sec3">
+        <div class="section-header">
+            <span class="num">3</span>
+            <h2>Cell Wall — Outer Covering (Plants, Fungi, Bacteria)</h2>
+        </div>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Feature</th><th>Cell Membrane</th><th>Cell Wall</th></tr></thead>
+            <tbody>
+                <tr><td>Permeability</td><td>Selectively permeable</td><td>Fully permeable</td></tr>
+                <tr><td>Present in</td><td>All cells</td><td>Plants, fungi, bacteria only</td></tr>
+                <tr><td>Composition</td><td>Lipids + proteins</td><td><strong>Cellulose</strong> (carbohydrate)</td></tr>
+                <tr><td>Function</td><td>Gatekeeper</td><td>Rigidity, structural support</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <ul>
+            <li>Plant cells: <strong>box-shaped</strong>, regularly arranged</li>
+            <li>Animal cells: <strong>irregularly shaped</strong>, flexible (no cell wall)</li>
+            <li>Cellulose in our diet acts as <strong>roughage</strong></li>
+        </ul>
+
+        <div class="qa-block">
+            <div class="q">Predict what would happen if a plant cell's cell wall became as flexible as the cell membrane.</div>
+            <details>
+                <summary>Show Answer</summary>
+                <div class="answer">The plant cell would lose its rigid shape, could not stand upright against wind/rain, leaves and stems would collapse, and the plant would wilt easily. It could not maintain firm structure.</div>
+            </details>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 4 ===== -->
+    <section id="sec4">
+        <div class="section-header">
+            <span class="num">4</span>
+            <h2>Cell Interior — Organelles</h2>
+        </div>
+
+        <p>All eukaryotic cells have three basic parts:</p>
+        <ol>
+            <li><strong>Plasma membrane</strong> — selectively permeable</li>
+            <li><strong>Cytoplasm</strong> — semi-fluid, jelly-like substance</li>
+            <li><strong>Nucleus</strong> — prominent, well-defined</li>
+        </ol>
+    </section>
+
+    <!-- 4.1 Nucleus -->
+    <section id="sec4-1">
+        <h3>4.1 Nucleus — House of Coded Instructions</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Part</th><th>Function</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Nuclear membrane</strong></td><td>Double-layered, has <strong>pores</strong> for material transfer</td></tr>
+                <tr><td><strong>Nucleolus</strong></td><td>Dense round body; site of <strong>ribosomal subunit synthesis</strong></td></tr>
+                <tr><td><strong>Chromatin</strong></td><td>Entangled thread-like DNA (in non-dividing cell)</td></tr>
+                <tr><td><strong>Chromosomes</strong></td><td>Rod-shaped (visible during cell division); contain <strong>DNA + proteins</strong></td></tr>
+                <tr><td><strong>Genes</strong></td><td>Functional segments of DNA that carry inheritance info</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p><strong>From cell to DNA:</strong> Cell → Nucleus → Chromosomes → DNA → Genes</p>
+
+        <div class="curiosity-box">
+            <div class="label">Threads of Curiosity</div>
+            <p>Mature human RBCs have <strong>no nucleus</strong> (enucleate) — allows more space for haemoglobin. Lifespan ~120 days. Cannot repair/divide.</p>
+        </div>
+
+        <p><strong>Prokaryotic cells:</strong> DNA as single circular molecule in <strong>nucleoid</strong> region (no membrane around it).</p>
+
+        <div class="qa-block">
+            <div class="q">Why do mature mammalian RBCs lack a nucleus? What disadvantage does this cause?</div>
+            <details>
+                <summary>Show Answer</summary>
+                <div class="answer">Absence of nucleus provides more space for haemoglobin → transports more oxygen. Disadvantage: cannot repair or divide, so lifespan is short (~120 days).</div>
+            </details>
+        </div>
+    </section>
+
+    <!-- 4.2 Ribosomes -->
+    <section id="sec4-2">
+        <h3>4.2 Ribosomes — Protein Factories</h3>
+        <ul>
+            <li>Sites of <strong>protein synthesis</strong></li>
+            <li>Present freely in cytoplasm OR attached to Rough ER</li>
+            <li>Made of large + small subunits (assembled in cytoplasm after exiting nucleus)</li>
+        </ul>
+    </section>
+
+    <!-- 4.3 ER -->
+    <section id="sec4-3">
+        <h3>4.3 Endoplasmic Reticulum (ER) — Manufacturing Factory</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Type</th><th>Ribosomes?</th><th>Function</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Rough ER (RER)</strong></td><td>Yes (attached)</td><td>Protein synthesis &amp; secretion</td></tr>
+                <tr><td><strong>Smooth ER (SER)</strong></td><td>No (smooth)</td><td>Synthesis &amp; storage of fats (lipids) and hormones</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <ul>
+            <li>Spreads like a <strong>network</strong> within cytoplasm</li>
+            <li>Continuous with <strong>outer nuclear membrane</strong></li>
+        </ul>
+    </section>
+
+    <!-- 4.4 Golgi -->
+    <section id="sec4-4">
+        <h3>4.4 Golgi Apparatus — Packaging &amp; Shipping Centre</h3>
+
+        <ul>
+            <li>Stacks of flattened, sac-like structures</li>
+            <li><strong>Modifies, sorts, and packages</strong> proteins/lipids into vesicles</li>
+            <li>Acts like cell's <strong>post office</strong></li>
+            <li>Sends to: transport, secretion, or lysosome formation</li>
+        </ul>
+
+        <div class="scientist-box">
+            <div class="label">Meet a Scientist: Camillo Golgi</div>
+            <p>Italian scientist (1898). First observed Golgi apparatus in nerve cells of barn owl using special staining. Many doubted its existence until electron microscopy confirmed it decades later.</p>
+        </div>
+    </section>
+
+    <!-- 4.5 Lysosomes -->
+    <section id="sec4-5">
+        <h3>4.5 Lysosomes — Clean-up System</h3>
+
+        <ul>
+            <li>Single membrane-bound sacs filled with <strong>enzymes</strong></li>
+            <li>Break down: unwanted proteins, carbs, fats, damaged cell parts</li>
+            <li>Products reused in cytoplasm</li>
+        </ul>
+
+        <div class="curiosity-box">
+            <div class="label">Threads of Curiosity</div>
+            <p>Human sperm cells contain lysosomal enzymes that break down the outer layer of the egg during fertilisation.</p>
+        </div>
+    </section>
+
+    <!-- 4.6 Mitochondria -->
+    <section id="sec4-6">
+        <h3>4.6 Mitochondria — Powerhouse of the Cell</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Feature</th><th>Detail</th></tr></thead>
+            <tbody>
+                <tr><td>Outer membrane</td><td>Smooth, porous</td></tr>
+                <tr><td>Inner membrane</td><td>Folded into <strong>cristae</strong> (increases surface area)</td></tr>
+                <tr><td>Function</td><td><strong>Cellular respiration</strong> → breaks down glucose → releases energy</td></tr>
+                <tr><td>Energy stored as</td><td><strong>ATP (Adenosine Triphosphate)</strong> — energy currency of cell</td></tr>
+                <tr><td>Own DNA &amp; ribosomes</td><td>Yes — can make some of their own proteins</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </section>
+
+    <!-- 4.7 Plastids -->
+    <section id="sec4-7">
+        <h3>4.7 Plastids — Food Synthesis &amp; Storage (Plant Cells)</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Type</th><th>Pigment?</th><th>Function</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Chloroplasts</strong></td><td>Green (chlorophyll)</td><td><strong>Photosynthesis</strong> — food synthesis</td></tr>
+                <tr><td><strong>Chromoplasts</strong></td><td>Yellow, orange, red</td><td><strong>Colour</strong> to flowers &amp; fruits (attract pollinators)</td></tr>
+                <tr><td><strong>Leucoplasts</strong></td><td>Colourless</td><td><strong>Storage</strong> of starch, oils, proteins (e.g., potato, Colocasia)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <ul>
+            <li>Chloroplasts have <strong>double membrane</strong>, stroma (semi-fluid), and disc-shaped structures with chlorophyll</li>
+            <li>Both mitochondria &amp; plastids have <strong>own DNA + ribosomes</strong> → evolutionary link to bacteria</li>
+        </ul>
+
+        <div class="qa-block">
+            <div class="q">Renu says all plant parts including roots have plastids. Rohit disagrees saying roots don't perform photosynthesis. Who is correct? Justify.</div>
+            <details>
+                <summary>Show Answer</summary>
+                <div class="answer">Rohit is partially correct — roots lack <strong>chloroplasts</strong> (no photosynthesis). However, roots may contain <strong>leucoplasts</strong> (colourless plastids) for storing starch. So plastids can be present but not green ones.</div>
+            </details>
+        </div>
+    </section>
+
+    <!-- 4.8 Vacuoles -->
+    <section id="sec4-8">
+        <h3>4.8 Vacuoles — Storage &amp; Support</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Feature</th><th>Plant Cells</th><th>Animal Cells</th></tr></thead>
+            <tbody>
+                <tr><td>Size</td><td>One <strong>large central vacuole</strong></td><td>Small, temporary vacuoles</td></tr>
+                <tr><td>Contents</td><td><strong>Cell sap</strong> (water, minerals, sugars, waste)</td><td>Temporary storage</td></tr>
+                <tr><td>Function</td><td>Storage + maintains <strong>turgor pressure</strong> (firmness)</td><td>Storage</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <ul>
+            <li>When plant lacks water → vacuole loses water → cells become less firm → <strong>plant wilts</strong></li>
+        </ul>
+
+        <div class="qa-block">
+            <div class="q">What would happen if all mitochondria were removed from a eukaryotic cell?</div>
+            <details>
+                <summary>Show Answer</summary>
+                <div class="answer">The cell would not be able to produce ATP (energy) via cellular respiration. Most cellular activities would stop due to lack of energy, and the cell would eventually die.</div>
+            </details>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 5 ===== -->
+    <section id="sec5">
+        <div class="section-header">
+            <span class="num">5</span>
+            <h2>Prokaryotic vs Eukaryotic Cells</h2>
+        </div>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Feature</th><th>Prokaryotic</th><th>Eukaryotic</th></tr></thead>
+            <tbody>
+                <tr><td>Nucleus</td><td><strong>Absent</strong> (nucleoid region)</td><td><strong>Present</strong> (membrane-bound)</td></tr>
+                <tr><td>Membrane-bound organelles</td><td><strong>Absent</strong></td><td><strong>Present</strong></td></tr>
+                <tr><td>Cell size</td><td><strong>1–10 μm</strong></td><td><strong>10–100 μm</strong></td></tr>
+                <tr><td>Cell type</td><td>Usually unicellular</td><td>Uni or multicellular</td></tr>
+                <tr><td>Examples</td><td>Bacteria</td><td>Plants, animals, fungi</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <blockquote><strong>Ready to Go Beyond:</strong> Viruses, viroids, and prions are <strong>acellular</strong> (not cells). Viruses = genetic material + protein coat. Viroids = no protein coat. Prions = misfolded proteins, no genetic material.</blockquote>
+
+        <div class="qa-block">
+            <div class="q">A student observes a cell under a microscope. It has a well-defined nucleus and mitochondria but no cell wall. Is it a plant cell, animal cell, or bacterial cell? Explain.</div>
+            <details>
+                <summary>Show Answer</summary>
+                <div class="answer"><strong>Animal cell.</strong> Well-defined nucleus → not bacteria (prokaryotic). No cell wall → not a plant cell. Therefore it is an animal cell.</div>
+            </details>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 6 ===== -->
+    <section id="sec6">
+        <div class="section-header">
+            <span class="num">6</span>
+            <h2>Cell Division</h2>
+        </div>
+
+        <h3>6.1 Mitosis</h3>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Aspect</th><th>Detail</th></tr></thead>
+            <tbody>
+                <tr><td>Produces</td><td><strong>2 genetically identical daughter cells</strong></td></tr>
+                <tr><td>Purpose</td><td>Growth, repair, maintenance, asexual reproduction</td></tr>
+                <tr><td>Chromosome number</td><td><strong>Same</strong> as parent cell</td></tr>
+                <tr><td>Occurs in</td><td>All body cells (somatic cells)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>6.2 Meiosis</h3>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Aspect</th><th>Detail</th></tr></thead>
+            <tbody>
+                <tr><td>Produces</td><td><strong>4 daughter cells</strong> (gametes)</td></tr>
+                <tr><td>Purpose</td><td>Sexual reproduction, genetic diversity</td></tr>
+                <tr><td>Chromosome number</td><td><strong>Half</strong> of parent cell</td></tr>
+                <tr><td>Occurs in</td><td>Reproductive organs (testes/ovaries in animals; anthers/ovaries in plants)</td></tr>
+                <tr><td>Process</td><td><strong>Two divisions</strong> (first = half chromosomes, second = similar to mitosis)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <div class="qa-block">
+            <div class="q">If skin cells started dividing by meiosis instead of mitosis, what would happen to a cut on the skin?</div>
+            <details>
+                <summary>Show Answer</summary>
+                <div class="answer">
+                    <p>Meiosis produces 4 cells with <strong>half the chromosome number</strong>. These cells would not be genetically identical to parent skin cells. The cut would not heal properly because:</p>
+                    <ul>
+                        <li>Daughter cells would have abnormal chromosome numbers</li>
+                        <li>They would not function as normal skin cells</li>
+                        <li>Healing would be impaired/disrupted</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+
+        <!-- Arun Kumar Sharma -->
+        <div class="scientist-box">
+            <div class="label">Meet a Scientist: Arun Kumar Sharma</div>
+            <p>Famous Indian botanist. Worked on <strong>chromosomes in plants</strong> — plant taxonomy, evolution, development. Invented many lab methods to study plant chromosomes. Received <strong>Shanti Swarup Bhatnagar award</strong> and <strong>Padma Bhushan</strong>.</p>
+        </div>
+
+        <!-- Gottlieb Haberlandt -->
+        <div class="scientist-box">
+            <div class="label">Meet a Scientist: Gottlieb Haberlandt (1902)</div>
+            <p>Austrian botanist. Proposed <strong>totipotency</strong> — any living plant cell can develop into a complete plant given suitable conditions. Laid foundation for <strong>Plant Tissue Culture Technology</strong>.</p>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 7 ===== -->
+    <section id="sec7">
+        <div class="section-header">
+            <span class="num">7</span>
+            <h2>Cell Theory — The Unifying Principle</h2>
+        </div>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Scientist</th><th>Year</th><th>Contribution</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Matthias Schleiden</strong> (German botanist)</td><td>1838</td><td>All <strong>plants</strong> are made of cells</td></tr>
+                <tr><td><strong>Theodor Schwann</strong> (German zoologist)</td><td>1839</td><td>All <strong>animals</strong> are made of cells</td></tr>
+                <tr><td><strong>Rudolf Virchow</strong> (German scientist)</td><td>1855</td><td>New cells form <strong>only from pre-existing cells</strong></td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p><strong>Classical Cell Theory:</strong></p>
+        <ol>
+            <li>All living organisms are made of <strong>one or more cells</strong></li>
+            <li>Cell is the <strong>basic unit</strong> of structure and function</li>
+            <li>All cells arise from <strong>pre-existing cells</strong></li>
+        </ol>
+    </section>
+
+    <!-- ===== SECTION 8 ===== -->
+    <section id="sec8">
+        <div class="section-header">
+            <span class="num">8</span>
+            <h2>Cell Growth &amp; Control</h2>
+        </div>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Concept</th><th>Explanation</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Contact inhibition</strong></td><td>Normal animal cells stop dividing when they touch neighbours</td></tr>
+                <tr><td><strong>Cancer cells</strong></td><td>Lose contact inhibition → divide uncontrollably → <strong>tumours</strong> (benign or malignant)</td></tr>
+                <tr><td><strong>Programmed Cell Death (PCD)</strong></td><td>Genetically regulated cell destruction — e.g., removes cells between fingers during embryo development</td></tr>
+                <tr><td><strong>Plant growth</strong></td><td>No contact inhibition (rigid cell wall); follow different growth pattern</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <div class="curiosity-box">
+            <div class="label">Threads of Curiosity</div>
+            <p>Cancer cells grow uncontrollably because the normal system of controlled division, aging, and death breaks down.</p>
+        </div>
+
+        <div class="qa-block">
+            <div class="q">What mechanism prevents tumour formation in normal human body cells? Can plants develop tumours? Explain.</div>
+            <details>
+                <summary>Show Answer</summary>
+                <div class="answer"><strong>Contact inhibition</strong> — normal animal cells stop dividing when they contact neighbouring cells. Plants <strong>can</strong> develop tumours because they lack contact inhibition due to rigid cell walls. However, plant tumours follow a different growth pattern.</div>
+            </details>
+        </div>
+    </section>
+
+    <!-- ===== QUICK COMPARISON TABLE ===== -->
+    <section id="sec-quick">
+        <div class="section-header">
+            <span class="num">📌</span>
+            <h2>Quick Comparison Table: Organelles at a Glance</h2>
+        </div>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Organelle</th><th>Function</th><th>Present in</th></tr></thead>
+            <tbody>
+                <tr><td>Cell membrane</td><td>Selective barrier</td><td>All cells</td></tr>
+                <tr><td>Cell wall</td><td>Rigidity, support</td><td>Plants, fungi, bacteria</td></tr>
+                <tr><td>Nucleus</td><td>Genetic control centre</td><td>Eukaryotes</td></tr>
+                <tr><td>Ribosomes</td><td>Protein synthesis</td><td>All cells</td></tr>
+                <tr><td>RER</td><td>Protein synthesis &amp; secretion</td><td>Eukaryotes</td></tr>
+                <tr><td>SER</td><td>Lipid/hormone synthesis</td><td>Eukaryotes</td></tr>
+                <tr><td>Golgi apparatus</td><td>Packaging &amp; shipping</td><td>Eukaryotes</td></tr>
+                <tr><td>Lysosomes</td><td>Digestion, clean-up</td><td>Animal cells mainly</td></tr>
+                <tr><td>Mitochondria</td><td>Energy (ATP) production</td><td>Eukaryotes</td></tr>
+                <tr><td>Chloroplasts</td><td>Photosynthesis</td><td>Plant cells</td></tr>
+                <tr><td>Chromoplasts</td><td>Colour (non-green pigments)</td><td>Plant cells</td></tr>
+                <tr><td>Leucoplasts</td><td>Storage (starch, oils, protein)</td><td>Plant cells</td></tr>
+                <tr><td>Vacuole</td><td>Storage, turgor pressure</td><td>All (large in plants)</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </section>
+
+    <!-- ===== J. CRAIG VENTER ===== -->
+    <section id="sec-craig">
+        <div class="section-header">
+            <span class="num">📌</span>
+            <h2>J. Craig Venter Experiment (Synthetic Biology, 2010)</h2>
+        </div>
+
+        <ul>
+            <li>Studied complete DNA of <em>Mycoplasma mycoides</em></li>
+            <li><strong>Chemically synthesised</strong> exact copy of this DNA</li>
+            <li>Removed original DNA from another related bacterium</li>
+            <li>Inserted <strong>synthetic DNA</strong> → cell grew and divided following synthetic DNA instructions</li>
+            <li><strong>Key insight:</strong> DNA controls structure and activities of a cell</li>
+            <li><strong>Important caveat:</strong> Only DNA was synthetic; other cell parts came from existing living cell</li>
+        </ul>
+    </section>
+
+    <!-- ===== CELL SAP & PRESERVATION ===== -->
+    <section id="sec-preserve">
+        <div class="section-header">
+            <span class="num">📌</span>
+            <h2>Cell Sap &amp; Preservation (Competency Context)</h2>
+        </div>
+
+        <ul>
+            <li><strong>High salt/sugar</strong> creates <strong>hypertonic environment</strong></li>
+            <li>Water leaves bacterial/fungal cells by <strong>osmosis</strong> → they die</li>
+            <li>This is why pickles and murabbas are preserved with salt/sugar</li>
+            <li>Scientific principle: <strong>Osmosis + hypertonic solution prevents microbial growth</strong></li>
+        </ul>
+    </section>
+
+    <!-- ===== BRIDGING SCIENCE ===== -->
+    <blockquote><strong>Bridging Science &amp; Society:</strong> <strong>Cell culture</strong> — growing cells outside body in nutrient-rich medium under sterile conditions. Used for studying cells, producing biochemicals, medicines, vaccines.</blockquote>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="footer-note">
+        Notes prepared from NCERT Class 9 Science Chapter 2 (iesc102.pdf) — Verified &amp; Fact-Checked
+    </div>
+
+</div>
+</div>
+
+<!-- ===== SIDEBAR TOGGLE SCRIPT ===== -->
+<script>
+(function() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuBtn = document.getElementById('menuBtn');
+
+    function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('open');
+        menuBtn.textContent = '✕';
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+        menuBtn.textContent = '☰';
+    }
+
+    menuBtn.addEventListener('click', () => {
+        if (sidebar.classList.contains('open')) closeSidebar();
+        else openSidebar();
+    });
+
+    overlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar on link click (mobile)
+    document.querySelectorAll('.sidebar nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 900) closeSidebar();
+        });
+    });
+
+    // Active link highlighting
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+                const id = entry.target.id;
+                const link = document.querySelector(`.sidebar nav a[href="#${id}"]`);
+                if (link) link.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-50% 0px -50% 0px' });
+
+    document.querySelectorAll('section[id]').forEach(s => observer.observe(s));
+})();
+</script>
+
+</body>
+</html>
